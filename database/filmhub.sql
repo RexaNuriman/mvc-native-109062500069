@@ -1,0 +1,12 @@
+CREATE DATABASE IF NOT EXISTS filmhub;
+
+USE filmhub;
+
+CREATE TABLE IF NOT EXISTS films (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    judul VARCHAR(150) NOT NULL,
+    genre VARCHAR(50) NOT NULL,
+    tahun_rilis YEAR NOT NULL,
+    sutradara VARCHAR(100) NOT NULL,
+    durasi INT NOT NULL
+);
