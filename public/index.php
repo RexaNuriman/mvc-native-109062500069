@@ -1,11 +1,18 @@
 <?php
 
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../app/models/Film.php';
+require_once __DIR__ . '/../app/controllers/FilmController.php';
 
-$filmModel = new Film($pdo);
-$films = $filmModel->getAll();
+$controller = new FilmController($pdo);
 
-echo '<pre>';
-print_r($films);
-echo '</pre>';
+$action = $_GET['action'] ?? 'index';
+
+switch ($action) {
+    case 'create':
+        $controller->create();
+        break;
+
+    default:
+        $controller->index();
+        break;
+}

@@ -16,4 +16,22 @@ class Film
 
         return $stmt->fetchAll();
     }
+
+    public function create(array $data): bool
+    {
+        $query = "INSERT INTO films
+                  (judul, genre, tahun_rilis, sutradara, durasi)
+                  VALUES
+                  (:judul, :genre, :tahun_rilis, :sutradara, :durasi)";
+
+        $stmt = $this->pdo->prepare($query);
+
+        return $stmt->execute([
+            ':judul' => $data['judul'],
+            ':genre' => $data['genre'],
+            ':tahun_rilis' => $data['tahun_rilis'],
+            ':sutradara' => $data['sutradara'],
+            ':durasi' => $data['durasi']
+        ]);
+    }
 }
