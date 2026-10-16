@@ -38,6 +38,20 @@
                             <a href="index.php?action=edit&id=<?= (int) $film['id'] ?>">
                                 Edit
                             </a>
+
+                            <form
+                                action="index.php?action=delete"
+                                method="POST"
+                                onsubmit="return confirm('Yakin ingin menghapus film ini?')"
+                                style="display: inline;"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="id"
+                                    value="<?= (int) $film['id'] ?>"
+                                >
+                                <button type="submit">Hapus</button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>

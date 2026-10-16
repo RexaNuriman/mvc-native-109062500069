@@ -1,4 +1,3 @@
-
 <?php
 
 class Film
@@ -10,7 +9,6 @@ class Film
         $this->pdo = $pdo;
     }
 
-    // Mengambil semua data film
     public function getAll(): array
     {
         $query = "SELECT * FROM films ORDER BY id DESC";
@@ -18,7 +16,6 @@ class Film
 
         return $stmt->fetchAll();
     }
-
 
     public function getById(int $id): array|false
     {
@@ -29,7 +26,6 @@ class Film
         return $stmt->fetch();
     }
 
-    // Menambahkan data film
     public function create(array $data): bool
     {
         $query = "INSERT INTO films
@@ -48,7 +44,6 @@ class Film
         ]);
     }
 
-    // Memperbarui data film
     public function update(int $id, array $data): bool
     {
         $query = "UPDATE films
@@ -69,5 +64,13 @@ class Film
             ':sutradara' => $data['sutradara'],
             ':durasi' => $data['durasi']
         ]);
+    }
+
+    public function delete(int $id): bool
+    {
+        $query = "DELETE FROM films WHERE id = :id";
+        $stmt = $this->pdo->prepare($query);
+
+        return $stmt->execute([':id' => $id]);
     }
 }

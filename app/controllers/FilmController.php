@@ -1,4 +1,3 @@
-
 <?php
 
 require_once __DIR__ . '/../models/Film.php';
@@ -18,6 +17,7 @@ class FilmController
 
         require __DIR__ . '/../views/films/index.php';
     }
+
 
     private function validate(array $data): string
     {
@@ -116,5 +116,32 @@ class FilmController
         }
 
         require __DIR__ . '/../views/films/edit.php';
+    }
+
+    public function delete(): void
+    {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            exit('Metode tidak diizinkan.');
+        }
+
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+
+        if (!$id || $id < 1) {
+            http_response_code(400);
+            exit('ID film tidak valid.');
+        }
+
+        $film = $this->filmModel->getById($id);
+
+        if (!$film) {
+            http_response_code(404);
+            exit('Film tidak ditemukan.');
+        }
+
+        $this->filmModel->delete($id);
+
+        header('Location: index.php');
+        exit;
     }
 }
