@@ -1,3 +1,4 @@
+
 <?php
 
 require_once __DIR__ . '/../models/Film.php';
@@ -11,7 +12,6 @@ class FilmController
         $this->filmModel = new Film($pdo);
     }
 
-    // Menampilkan daftar film
     public function index(): void
     {
         $films = $this->filmModel->getAll();
@@ -19,30 +19,52 @@ class FilmController
         require __DIR__ . '/../views/films/index.php';
     }
 
-    // Menampilkan form tambah film
+    private function validate(array $data): string
+    {
+        if (
+            $data['judul'] === '' ||
+            $data['genre'] === '' ||
+            $data['tahun_rilis'] === '' ||
+            $data['sutradara'] === '' ||
+            $data['durasi'] === ''
+        ) {
+            return 'Semua kolom wajib diisi.';
+        }
+
+        if (
+            !ctype_digit($data['tahun_rilis']) ||
+            (int) $data['tahun_rilis'] < 1901 ||
+            (int) $data['tahun_rilis'] > 2155
+        ) {
+            return 'Tahun rilis tidak valid.';
+        }
+
+        if (!ctype_digit($data['durasi']) || (int) $data['durasi'] < 1) {
+            return 'Durasi harus berupa angka positif.';
+        }
+
+        return '';
+    }
+
     public function create(): void
     {
         $error = '';
+        $data = [
+            'judul' => '',
+            'genre' => '',
+            'tahun_rilis' => '',
+            'sutradara' => '',
+            'durasi' => ''
+        ];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $data = [
-                'judul' => trim($_POST['judul'] ?? ''),
-                'genre' => trim($_POST['genre'] ?? ''),
-                'tahun_rilis' => trim($_POST['tahun_rilis'] ?? ''),
-                'sutradara' => trim($_POST['sutradara'] ?? ''),
-                'durasi' => trim($_POST['durasi'] ?? '')
-            ];
+            foreach ($data as $key => $value) {
+                $data[$key] = trim((string) ($_POST[$key] ?? ''));
+            }
 
-            if (
-                in_array('', $data, true) ||
-                !ctype_digit($data['tahun_rilis']) ||
-                (int) $data['tahun_rilis'] < 1901 ||
-                (int) $data['tahun_rilis'] > 2155 ||
-                !ctype_digit($data['durasi']) ||
-                (int) $data['durasi'] < 1
-            ) {
-                $error = 'Semua kolom wajib diisi dengan data yang valid.';
-            } else {
+            $error = $this->validate($data);
+
+            if ($error === '') {
                 $this->filmModel->create($data);
 
                 header('Location: index.php');
@@ -51,5 +73,48 @@ class FilmController
         }
 
         require __DIR__ . '/../views/films/create.php';
+    }
+
+    public function edit(): void
+    {
+        $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+
+        if (!$id || $id < 1) {
+            http_response_code(400);
+            exit('ID film tidak valid.');
+        }
+
+        $film = $this->filmModel->getById($id);
+
+        if (!$film) {
+            http_response_code(404);
+            exit('Film tidak ditemukan.');
+        }
+
+        $error = '';
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $data = [];
+
+            foreach (
+                ['judul', 'genre', 'tahun_rilis', 'sutradara', 'durasi']
+                as $key
+            ) {
+                $data[$key] = trim((string) ($_POST[$key] ?? ''));
+            }
+
+            $error = $this->validate($data);
+
+            if ($error === '') {
+                $this->filmModel->update($id, $data);
+
+                header('Location: index.php');
+                exit;
+            }
+
+            $film = array_merge($film, $data);
+        }
+
+        require __DIR__ . '/../views/films/edit.php';
     }
 }

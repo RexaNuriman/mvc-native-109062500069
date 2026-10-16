@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -9,7 +8,9 @@
 <body>
     <h1>Daftar Film</h1>
 
-    <a href="index.php?action=create">Tambah Film</a>
+    <p>
+        <a href="index.php?action=create">Tambah Film</a>
+    </p>
 
     <?php if (empty($films)): ?>
         <p>Belum ada data film.</p>
@@ -22,6 +23,7 @@
                     <th>Tahun Rilis</th>
                     <th>Sutradara</th>
                     <th>Durasi (menit)</th>
+                    <th>Aksi</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,6 +34,11 @@
                         <td><?= htmlspecialchars((string) $film['tahun_rilis']) ?></td>
                         <td><?= htmlspecialchars($film['sutradara']) ?></td>
                         <td><?= htmlspecialchars((string) $film['durasi']) ?></td>
+                        <td>
+                            <a href="index.php?action=edit&id=<?= (int) $film['id'] ?>">
+                                Edit
+                            </a>
+                        </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -39,4 +46,3 @@
     <?php endif; ?>
 </body>
 </html>
-

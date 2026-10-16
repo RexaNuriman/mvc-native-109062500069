@@ -12,6 +12,10 @@ switch ($action) {
         $controller->create();
         break;
 
+    case 'edit':
+        $controller->edit();
+        break;
+
     default:
         $controller->index();
         break;
